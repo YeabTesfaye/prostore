@@ -4,3 +4,8 @@ export const APP_DESCRIPTION =
   'A modern store built with Next.js, ShadCN, and Prisma.';
 export const SERVER_URL =
   process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000';
+
+export const LATEST_PRODUCTS_LIMIT =
+  Number(process.env.LATEST_PRODUCTS_LIMIT) || 4;
+
+console.log(process.env.LATEST_PRODUCTS_LIMIT);
