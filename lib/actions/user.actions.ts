@@ -24,7 +24,7 @@ export async function signInWithCredentials(
     if (isRedirectError(error)) {
       throw error;
     }
-    return { success: false, message: 'Invalid email or password' };
+    return { success: false, message: formatError(error) };
   }
 }
 
@@ -57,7 +57,7 @@ export async function signUp(prevState: unknown, formData: FormData) {
 
     await signIn('credentials', {
       email: user.email,
-      passwrod: user.password,
+      passwrod: plainPassword,
     });
     return { success: true, message: 'User created successfully' };
   } catch (error) {

@@ -25,7 +25,6 @@ export const config = {
         password: { type: 'password' },
       },
       async authorize(credentials) {
-        console.log(credentials);
         if (credentials == null) return null;
 
         // Find user in database
@@ -72,7 +71,7 @@ export const config = {
       if (user) {
         token.role = user.role;
 
-        // If user has no name, user email as their default name
+        // If user has no name, user email as their default name eg using providers 
         if (user.name === 'NO_NAME') {
           token.name = user.email!.split('@')[0];
 
