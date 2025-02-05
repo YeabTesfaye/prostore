@@ -67,11 +67,12 @@ export const config = {
       return session;
     },
     async jwt({ token, user, trigger, session }: any) {
+    
       // Assign user fields to token
       if (user) {
         token.role = user.role;
 
-        // If user has no name, user email as their default name eg using providers 
+        // If user has no name, user email as their default name eg using providers
         if (user.name === 'NO_NAME') {
           token.name = user.email!.split('@')[0];
 
