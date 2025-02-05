@@ -1,0 +1,20 @@
+model User {
+    id            String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid()
+    name          String    @default("NO_NAME")
+    email         String    @unique(map: "user_email_idx")
+    password      String?
+    role          Role      @default(USER)
+    emailVerified DateTime? @db.Timestamp(6)
+    image         String?
+    address       Json?     @db.Json
+    paymentMethod String?
+    createdAt     DateTime  @default(now()) @db.Timestamp(6)
+    updatedAt     DateTime  @updatedAt
+    Account       Account[]
+    Session       Session[]
+}
+
+enum Role {
+    USER
+    ADMIN
+}

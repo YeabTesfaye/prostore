@@ -1,7 +1,7 @@
 import Footer from '@/components/footer';
 import Header from '@/components/shared/header';
 
-export default function RootLayout({
+export default function Layout({
   children,
 }: {
   children: React.ReactNode;
