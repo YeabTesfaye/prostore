@@ -1,10 +1,36 @@
+import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
+import AddToCart from '@/components/shared/product/add-to-cart';
+import ProductImages from '@/components/shared/product/product-images';
 import ProductPrice from '@/components/shared/product/product-price';
+import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { getProductBySlug } from '@/lib/actions/product.actions';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import ProductImages from '@/components/shared/product/product-images';
+
+interface GenerateMetadataProps {
+  params: Promise<{
+    slug: string;
+  }>;
+}
+
+// Daynamic Metadata function
+export async function generateMetadata({
+  params,
+}: GenerateMetadataProps): Promise<Metadata> {
+  const { slug } = await params;
+  const product = await getProductBySlug(slug);
+
+  if (!product) {
+    return {
+      title: 'Product Not Found',
+      description: 'The product you are looking for does not exist.',
+    };
+  }
+  return {
+    title: product.name,
+    description: product.description,
+  };
+}
 
 const ProductDetailsPage = async (props: {
   params: Promise<{ slug: string }>;
@@ -71,8 +97,17 @@ const ProductDetailsPage = async (props: {
                   {renderStockStatus()}
                 </div>
                 {product.stock > 0 && (
-                  <div className=" flex-center">
-                    <Button className="w-full">Add to cart</Button>
+                  <div className="flex-center">
+                    <AddToCart
+                      item={{
+                        productId: product.id,
+                        name: product.name,
+                        slug: product.slug,
+                        price: product.price,
+                        qty: 1,
+                        image: product.images![0],
+                      }}
+                    />
                   </div>
                 )}
               </CardContent>

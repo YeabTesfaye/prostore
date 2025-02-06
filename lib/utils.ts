@@ -1,5 +1,7 @@
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
+import { cartItemSchema } from './validator';
+import { z } from 'zod';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -40,3 +42,31 @@ export function formatError(error: any): string {
       : JSON.stringify(error.message);
   }
 }
+
+// Round to 2 decimal places
+export const round2 = (value: number | string) => {
+  if (typeof value == 'number') {
+    return Math.round((value + Number.EPSILON) * 100) / 100;
+  } else if (typeof value === 'string') {
+    return Math.round((Number(value) + Number.EPSILON) * 100) / 100;
+  } else {
+    throw new Error('value is not a number nor a string');
+  }
+};
+
+
+// Clculate cart price based on items
+export const calcPrice = (items: z.infer<typeof cartItemSchema>[]) => {
+  const itemsPrice = round2(
+      items.reduce((acc, item) => acc + Number(item.price) * item.qty, 0),
+    ),
+    shippingPrice = round2(itemsPrice > 100 ? 0 : 10),
+    taxPrice = round2(0.15 * itemsPrice),
+    totalPrice = round2(itemsPrice + shippingPrice + taxPrice);
+  return {
+    itemsPrice: itemsPrice.toFixed(2),
+    shippingPrice: shippingPrice.toFixed(2),
+    taxPrice: taxPrice.toFixed(2),
+    totalPrice: totalPrice.toFixed(2),
+  };
+};
