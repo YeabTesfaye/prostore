@@ -2,7 +2,6 @@ import { compareSync } from 'bcrypt-ts-edge';
 import type { NextAuthConfig } from 'next-auth';
 import NextAuth from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
-import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 
 import { prisma } from '@/db/prisma';
