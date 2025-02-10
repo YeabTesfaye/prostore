@@ -33,27 +33,30 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       return token;
     },
     async authorized({ request }: any) {
+      const sessionCartId = request.cookies.get('sessionCartId');
+
       // Check for cart cookie
-      if (!request.cookies.get('sessionCartId')) {
+      if (!sessionCartId) {
         const sessionCartId = crypto.randomUUID();
-
-        // Clone the request headers
-        const newRequestHeaders = new Headers(request.headers);
-
-        // Create a new response and add the new headers
         const response = NextResponse.next({
           request: {
-            headers: newRequestHeaders,
+            headers: new Headers(request.headers),
           },
         });
 
-        // Set the newly generate sessionCartId in the response cookies
-        response.cookies.set('sessionCartId', sessionCartId);
+        // Setting secure cookies with no cache
+        response.cookies.set('sessionCartId', sessionCartId, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === 'production',
+          sameSite: 'lax',
+          path: '/',
+        });
 
-        // Return the respnse with sessionCartId set
+        response.headers.set('Cache-Control', 'no-store');
+
         return response;
       } else {
-        return true;
+        return NextResponse.next();
       }
     },
   },
