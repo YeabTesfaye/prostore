@@ -17,6 +17,8 @@ const SignUpForm = () => {
     success: false,
   });
 
+ 
+
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get('callbackUrl') || '/';
 

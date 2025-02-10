@@ -26,7 +26,7 @@ const SignUp = async (props: {
 
   const session = await auth();
   if (session) {
-    return redirect(callbackUrl || '');
+    return redirect(callbackUrl || '/');
   }
   return (
     <div className="w-full max-w-md mx-auto">

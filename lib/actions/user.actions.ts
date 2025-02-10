@@ -34,6 +34,7 @@ export async function singOutUser() {
 }
 
 // Register a new user
+// Register a new user
 export async function signUp(prevState: unknown, formData: FormData) {
   try {
     const user = signUpFormSchema.parse({
@@ -45,8 +46,10 @@ export async function signUp(prevState: unknown, formData: FormData) {
 
     const plainPassword = user.password;
 
+    // Hash the password
     user.password = hashSync(user.password, 10);
 
+    // Create the user in the database
     await prisma.user.create({
       data: {
         name: user.name,
@@ -55,10 +58,12 @@ export async function signUp(prevState: unknown, formData: FormData) {
       },
     });
 
+    // Sign in the user after registration
     await signIn('credentials', {
       email: user.email,
-      passwrod: plainPassword,
+      password: plainPassword, // Fixed typo here
     });
+
     return { success: true, message: 'User created successfully' };
   } catch (error) {
     if (isRedirectError(error)) {
