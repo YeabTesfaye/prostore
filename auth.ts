@@ -2,9 +2,11 @@ import authConfig from '@/auth.config';
 
 import { PrismaAdapter } from '@auth/prisma-adapter';
 import NextAuth from 'next-auth';
-import { getUserById } from './data/user';
-import { prisma } from './db/prisma';
+import CredentialsProvider from 'next-auth/providers/credentials';
+import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
+import { prisma } from './db/prisma';
+import { getUserById } from './data/user';
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   pages: {
@@ -32,10 +34,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       token.role = userExist.role;
       return token;
     },
-    async authorized({request}:any) {
-       // Check for cart cookie
-       if (!request.cookies.get('sessionCartId')) {
-
+    async authorized({ request }: any) {
+      // Check for cart cookie
+      if (!request.cookies.get('sessionCartId')) {
         const sessionCartId = crypto.randomUUID();
 
         // Clone the request headers
@@ -53,9 +54,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
         // Return the respnse with sessionCartId set
         return response;
-      }
-      else{
-        return true
+      } else {
+        return true;
       }
     },
   },
