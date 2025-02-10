@@ -18,12 +18,23 @@ export async function signInWithCredentials(
       password: formData.get('password'),
     });
 
-    await signIn('credentials', user);
+    const res = await signIn('credentials', {
+      ...user,
+      redirect: false,
+    });
+    if (res?.error) {
+      throw new Error(res.error);
+    }
     return { success: true, message: 'Signed in successfully' };
-  } catch (error) {
+  } catch (error: any) {
     if (isRedirectError(error)) {
       throw error;
     }
+
+    if (error.message === 'CredentialsSignin') {
+      return { success: false, message: 'Invalid email or password' };
+    }
+    // console.error(error.message);
     return { success: false, message: formatError(error) };
   }
 }
@@ -61,7 +72,7 @@ export async function signUp(prevState: unknown, formData: FormData) {
     // Sign in the user after registration
     await signIn('credentials', {
       email: user.email,
-      password: plainPassword, // Fixed typo here
+      password: plainPassword,
     });
 
     return { success: true, message: 'User created successfully' };

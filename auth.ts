@@ -2,16 +2,14 @@ import authConfig from '@/auth.config';
 
 import { PrismaAdapter } from '@auth/prisma-adapter';
 import NextAuth from 'next-auth';
-import CredentialsProvider from 'next-auth/providers/credentials';
-import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
-import { prisma } from './db/prisma';
 import { getUserById } from './data/user';
+import { prisma } from './db/prisma';
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   pages: {
     signIn: '/auth/login',
-    error: '/auth/login',
+    error: '/auth/error',
   },
   callbacks: {
     async signIn({ user }: any) {
