@@ -1,20 +1,17 @@
 import { auth } from './auth';
-import authConfig from './auth.config';
-import NextAuth from 'next-auth';
 
 export default auth((req) => {
-  const { nextUrl } = req;
-
   const isLoggedIn = !!req.auth;
-
-  return;
+  // Perform actions only if necessary based on the login status
+  if (isLoggedIn) {
+    // Your login-specific logic here, if needed
+  }
+  // You can return a redirect or further handle the request if needed
 });
 
 export const config = {
   matcher: [
-    // Skip Next.js internals and all static files, unless found in search params
     '/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
-    // Always run for API routes
     '/(api|trpc)(.*)',
   ],
 };
