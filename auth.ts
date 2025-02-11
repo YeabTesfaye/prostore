@@ -33,31 +33,13 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       return token;
     },
     async authorized({ request }: any) {
-      const sessionCartId = request.cookies.get('sessionCartId');
-
-      // Check for cart cookie
+      let sessionCartId = localStorage.getItem('sessionCartId');
       if (!sessionCartId) {
-        const sessionCartId = crypto.randomUUID();
-        const response = NextResponse.next({
-          request: {
-            headers: new Headers(request.headers),
-          },
-        });
-
-        // Setting secure cookies with no cache
-        response.cookies.set('sessionCartId', sessionCartId, {
-          httpOnly: true,
-          secure: process.env.NODE_ENV === 'production',
-          sameSite: 'lax',
-          path: '/',
-        });
-
-        response.headers.set('Cache-Control', 'no-store');
-
-        return response;
-      } else {
-        return NextResponse.next();
+        sessionCartId = crypto.randomUUID();
+        localStorage.setItem('sessionCartId', sessionCartId);
       }
+
+      return NextResponse.next();
     },
   },
   adapter: PrismaAdapter(prisma),
