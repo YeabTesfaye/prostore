@@ -1,11 +1,20 @@
 'use server';
-import { isRedirectError } from 'next/dist/client/components/redirect-error';
 
 import { signIn, signOut } from '@/auth';
-import { signInFormSchema, signUpFormSchema } from '../validator';
-import { hashSync } from 'bcrypt-ts-edge';
 import { prisma } from '@/db/prisma';
 import { formatError } from '@/lib/utils';
+import { SignUpState } from '@/types';
+import { hashSync } from 'bcrypt-ts-edge';
+import { AuthError } from 'next-auth';
+import { revalidatePath } from 'next/cache';
+import { signInFormSchema, signUpFormSchema } from '../validator';
+import { isRedirectError } from 'next/dist/client/components/redirect-error';
+import { redirect } from 'next/navigation';
+
+const defaultValues = {
+  email: '',
+  password: '',
+};
 
 // Sign in the user with credentials
 export async function signInWithCredentials(
@@ -13,28 +22,47 @@ export async function signInWithCredentials(
   formData: FormData,
 ) {
   try {
-    const user = signInFormSchema.parse({
-      email: formData.get('email'),
-      password: formData.get('password'),
+    const email = formData.get('email');
+    const password = formData.get('password');
+
+    const validatedFields = signInFormSchema.safeParse({
+      email,
+      password,
     });
 
-    const res = await signIn('credentials', {
-      ...user,
-      redirect: false,
-    });
-    if (res?.error) {
-      throw new Error(res.error);
+    if (!validatedFields.success) {
+      return {
+        message: 'validation error',
+        errors: validatedFields.error.flatten().formErrors,
+      };
     }
-    return { success: true, message: 'Signed in successfully' };
+    await signIn('credentials', formData);
+    return { success: true, message: 'Signed in successfully', errors: {} };
   } catch (error: any) {
     if (isRedirectError(error)) {
       throw error;
     }
-
-    if (error.message === 'CredentialsSignin') {
-      return { success: false, message: 'Invalid email or password' };
+    if (error instanceof AuthError) {
+      switch (error.type) {
+        case 'CredentialsSignin':
+          return {
+            message: 'Invalid email or password',
+            errors: {
+              ...defaultValues,
+              credentials: 'incorrect email or password',
+            },
+          };
+        default:
+          return {
+            message: 'unkown error',
+            errors: {
+              ...defaultValues,
+              unknown: 'unkown error',
+            },
+          };
+      }
     }
-    // console.error(error.message);
+
     return { success: false, message: formatError(error) };
   }
 }
@@ -80,7 +108,6 @@ export async function signUp(prevState: unknown, formData: FormData) {
     if (isRedirectError(error)) {
       throw error;
     }
-
     return {
       success: false,
       message: formatError(error),
