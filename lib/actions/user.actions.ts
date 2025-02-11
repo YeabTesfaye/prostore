@@ -3,13 +3,10 @@
 import { signIn, signOut } from '@/auth';
 import { prisma } from '@/db/prisma';
 import { formatError } from '@/lib/utils';
-import { SignUpState } from '@/types';
 import { hashSync } from 'bcrypt-ts-edge';
 import { AuthError } from 'next-auth';
-import { revalidatePath } from 'next/cache';
-import { signInFormSchema, signUpFormSchema } from '../validator';
 import { isRedirectError } from 'next/dist/client/components/redirect-error';
-import { redirect } from 'next/navigation';
+import { signInFormSchema, signUpFormSchema } from '../validator';
 
 const defaultValues = {
   email: '',
