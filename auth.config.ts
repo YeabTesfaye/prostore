@@ -1,9 +1,9 @@
 import Credential from 'next-auth/providers/credentials';
-import { compareSync } from 'bcrypt-ts-edge';
 import type { NextAuthConfig } from 'next-auth';
 
 import { getUserByEmail } from '@/data/user';
 import { signInFormSchema } from './lib/validator';
+import { compare } from './lib/constants/encrypt';
 
 export default {
   secret: process.env.AUTH_SECRET,
@@ -30,7 +30,7 @@ export default {
         }
 
         // Compare passwords
-        const passwordsMatch = compareSync(password, user.password);
+        const passwordsMatch = compare(password, user.password);
         if (!passwordsMatch) {
           return null;
         }

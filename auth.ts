@@ -32,15 +32,32 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       token.role = userExist.role;
       return token;
     },
-    async authorized({ request }: any) {
-      let sessionCartId = localStorage.getItem('sessionCartId');
-      if (!sessionCartId) {
-        sessionCartId = crypto.randomUUID();
-        localStorage.setItem('sessionCartId', sessionCartId);
-      }
+    // authorized({ request }: any) {
+    //   const sessionCartId = request.cookies.get('sessionCartId');
+    //   console.log(sessionCartId, "request.cookies.get('sessionCartId')");
+    //   // Check for session cart cookie
+    //   if (!request.cookies.get('sessionCartId')) {
+    //     // Generate new session cart id cookie
+    //     const sessionCartId = crypto.randomUUID();
 
-      return NextResponse.next();
-    },
+    //     // Clone the req headers
+    //     const newRequestHeaders = new Headers(request.headers);
+
+    //     // Create new response and add the new headers
+    //     const response = NextResponse.next({
+    //       request: {
+    //         headers: newRequestHeaders,
+    //       },
+    //     });
+
+    //     // Set newly generated sessionCartId in the response cookies
+    //     response.cookies.set('sessionCartId', sessionCartId);
+
+    //     return response;
+    //   } else {
+    //     return true;
+    //   }
+    // },
   },
   adapter: PrismaAdapter(prisma),
   session: { strategy: 'jwt' },
