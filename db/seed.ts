@@ -11,7 +11,6 @@ async function main() {
   await prisma.user.deleteMany();
 
   await prisma.product.createMany({ data: sampleData.products });
-  await prisma.user.createMany({ data: sampleData.users });
 
   console.log('Database seeded successfully');
 }
