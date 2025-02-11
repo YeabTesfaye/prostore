@@ -3,7 +3,7 @@ import { compareSync } from 'bcrypt-ts-edge';
 import type { NextAuthConfig } from 'next-auth';
 
 import { getUserByEmail } from '@/data/user';
-import { loginSchema } from '@/schema';
+import { signInFormSchema } from './lib/validator';
 
 export default {
   secret: process.env.AUTH_SECRET,
@@ -16,13 +16,13 @@ export default {
       },
       async authorize(credentials) {
         // Validate the credentials using the schema
-        const validatedFields = loginSchema.safeParse(credentials);
+        const validatedFields = signInFormSchema.safeParse(credentials);
         if (!validatedFields.success) {
           return null; // Return null for invalid credentials
         }
 
         const { email, password } = validatedFields.data;
-        
+
         // Fetch user from the database
         const user = await getUserByEmail(email);
         if (!user || !user.password) {
