@@ -1,33 +1,38 @@
+import NextAuth from 'next-auth';
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import authConfig from './auth.config';
 
-export function middleware(request: NextRequest) {
-  const sessionCartId = request.cookies.get('sessionCartId');
+export default NextAuth(authConfig).auth;
 
-  // Check for session cart cookie
-  if (!sessionCartId) {
-    // Generate new session cart id
-    const newSessionCartId = crypto.randomUUID();
+// export function middleware(request: NextRequest) {
+//   const sessionCartId = request.cookies.get('sessionCartId');
 
-    // Create new response
-    const response = NextResponse.next();
+//   // Check for session cart cookie
+//   if (!sessionCartId) {
+//     // Generate new session cart id
+//     const newSessionCartId = crypto.randomUUID();
 
-    // Set newly generated sessionCartId in the response cookies
-    response.cookies.set('sessionCartId', newSessionCartId, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      path: '/',
-      maxAge: 60 * 60 * 24, // 1 day expiration
-    });
+//     // Create new response
+//     const response = NextResponse.next();
 
-    return response;
-  }
+//     // Set newly generated sessionCartId in the response cookies
+//     response.cookies.set('sessionCartId', newSessionCartId, {
+//       httpOnly: true,
+//       secure: process.env.NODE_ENV === 'production',
+//       sameSite: 'lax',
+//       path: '/',
+//       maxAge: 60 * 60 * 24, // 1 day expiration
+//     });
 
-  return NextResponse.next();
-}
+//     return response;
+//   }
+
+//   return NextResponse.next();
+// }
 
 // Apply middleware to desired routes
+
 export const config = {
   matcher: [
     // Skip Next.js internals and all static files, unless found in search params
