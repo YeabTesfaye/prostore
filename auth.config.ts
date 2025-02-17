@@ -110,51 +110,51 @@ export default {
 
       return token;
     },
-    authorized({ auth, request }) {
-      // Array of regex patterns of paths we want to protect
-      const protectedPaths = [
-        /\/shipping-address/,
-        /\/payment-method/,
-        /\/place-order/,
-        /\/profile/,
-        /\/user\/(.*)/,
-        /\/order\/(.*)/,
-        /\/admin/,
-      ];
+    // authorized({ auth, request }) {
+    //   // Array of regex patterns of paths we want to protect
+    //   const protectedPaths = [
+    //     /\/shipping-address/,
+    //     /\/payment-method/,
+    //     /\/place-order/,
+    //     /\/profile/,
+    //     /\/user\/(.*)/,
+    //     /\/order\/(.*)/,
+    //     /\/admin/,
+    //   ];
 
-      // Get pathname from the req URL object
-      const { pathname } = request.nextUrl;
+    //   // Get pathname from the req URL object
+    //   const { pathname } = request.nextUrl;
 
-      // Check if user is not authenticated and accessing a protected path
-      if (!auth && protectedPaths.some((p) => p.test(pathname))) {
-        const callbackUrl = encodeURIComponent(pathname); // Use the current pathname as callbackUrl
-        // Redirect to the sign-in page with callbackUrl
-        return NextResponse.redirect(
-          `http://localhost:3000/sign-in?callbackUrl=${callbackUrl}`,
-        );
-      }
-      // Check for session cart cookie
-      if (!request.cookies.get('sessionCartId')) {
-        // Generate new session cart id cookie
-        const sessionCartId = crypto.randomUUID();
+    //   // Check if user is not authenticated and accessing a protected path
+    //   if (!auth && protectedPaths.some((p) => p.test(pathname))) {
+    //     const callbackUrl = encodeURIComponent(pathname); // Use the current pathname as callbackUrl
+    //     // Redirect to the sign-in page with callbackUrl
+    //     return NextResponse.redirect(
+    //       `http://localhost:3000/sign-in?callbackUrl=${callbackUrl}`,
+    //     );
+    //   }
+    //   // Check for session cart cookie
+    //   if (!request.cookies.get('sessionCartId')) {
+    //     // Generate new session cart id cookie
+    //     const sessionCartId = crypto.randomUUID();
 
-        // Clone the req headers
-        const newRequestHeaders = new Headers(request.headers);
+    //     // Clone the req headers
+    //     const newRequestHeaders = new Headers(request.headers);
 
-        // Create new response and add the new headers
-        const response = NextResponse.next({
-          request: {
-            headers: newRequestHeaders,
-          },
-        });
+    //     // Create new response and add the new headers
+    //     const response = NextResponse.next({
+    //       request: {
+    //         headers: newRequestHeaders,
+    //       },
+    //     });
 
-        // Set newly generated sessionCartId in the response cookies
-        response.cookies.set('sessionCartId', sessionCartId);
+    //     // Set newly generated sessionCartId in the response cookies
+    //     response.cookies.set('sessionCartId', sessionCartId);
 
-        return response;
-      } else {
-        return true;
-      }
-    },
+    //     return response;
+    //   } else {
+    //     return true;
+    //   }
+    // },
   },
 } satisfies NextAuthConfig;

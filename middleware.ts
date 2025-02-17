@@ -1,43 +1,66 @@
-import NextAuth from 'next-auth';
 import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
-import authConfig from './auth.config';
+import { NextRequest } from 'next/server';
+import { auth } from './auth';
 
-export default NextAuth(authConfig).auth;
+export default async function middleware(request: NextRequest) {
+  // The authorized function that checks if a user is authenticated
+  const authorized = async ({ auth, request }: { auth: any; request: NextRequest }) => {
+    // Array of regex patterns of paths we want to protect
+    const protectedPaths = [
+      /\/shipping-address/,
+      /\/payment-method/,
+      /\/place-order/,
+      /\/profile/,
+      /\/user\/(.*)/,
+      /\/order\/(.*)/,
+      /\/admin/,
+    ];
 
-// export function middleware(request: NextRequest) {
-//   const sessionCartId = request.cookies.get('sessionCartId');
+    // Get pathname from the req URL object
+    const { pathname } = request.nextUrl;
 
-//   // Check for session cart cookie
-//   if (!sessionCartId) {
-//     // Generate new session cart id
-//     const newSessionCartId = crypto.randomUUID();
+    // Check if user is not authenticated and accessing a protected path
+    if (!auth && protectedPaths.some((p) => p.test(pathname))) {
+      const callbackUrl = encodeURIComponent(pathname); // Use the current pathname as callbackUrl
+      // Redirect to the sign-in page with callbackUrl
+      return NextResponse.redirect(
+        `http://localhost:3000/sign-in?callbackUrl=${callbackUrl}`,
+      );
+    }
 
-//     // Create new response
-//     const response = NextResponse.next();
+    // Check for session cart cookie
+    if (!request.cookies.get('sessionCartId')) {
+      // Generate new session cart id cookie
+      const sessionCartId = crypto.randomUUID();
 
-//     // Set newly generated sessionCartId in the response cookies
-//     response.cookies.set('sessionCartId', newSessionCartId, {
-//       httpOnly: true,
-//       secure: process.env.NODE_ENV === 'production',
-//       sameSite: 'lax',
-//       path: '/',
-//       maxAge: 60 * 60 * 24, // 1 day expiration
-//     });
+      // Clone the req headers
+      const newRequestHeaders = new Headers(request.headers);
 
-//     return response;
-//   }
+      // Create new response and add the new headers
+      const response = NextResponse.next({
+        request: {
+          headers: newRequestHeaders,
+        },
+      });
 
-//   return NextResponse.next();
-// }
+      // Set newly generated sessionCartId in the response cookies
+      response.cookies.set('sessionCartId', sessionCartId);
 
-// Apply middleware to desired routes
+      return response;
+    } else {
+      return NextResponse.next(); // No issues, continue processing
+    }
+  };
+
+  // Perform the actual authentication check
+  const authResult = await auth(); // Assuming you have some authentication setup here
+
+  return authorized({ auth: authResult, request });
+}
 
 export const config = {
   matcher: [
-    // Skip Next.js internals and all static files, unless found in search params
     '/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
-    // Always run for API routes
     '/(api|trpc)(.*)',
   ],
 };
