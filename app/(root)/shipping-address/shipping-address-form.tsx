@@ -13,14 +13,14 @@ import { useToast } from '@/hooks/use-toast';
 import { updateUserAddress } from '@/lib/actions/user.actions';
 import { shippingAddressDefaultValues } from '@/lib/constants';
 import { shippingAddressSchema } from '@/lib/validator';
-import { shippingAddress } from '@/types';
+import { ShippingAddress } from '@/types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ArrowRight, Loader } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useTransition } from 'react';
 import { ControllerRenderProps, SubmitHandler, useForm } from 'react-hook-form';
 import { z } from 'zod';
-const ShippingAddressForm = ({ address }: { address: shippingAddress }) => {
+const ShippingAddressForm = ({ address }: { address: ShippingAddress }) => {
   const router = useRouter();
   const { toast } = useToast();
 

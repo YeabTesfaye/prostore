@@ -4,15 +4,17 @@ import { auth, signIn, signOut } from '@/auth';
 import { prisma } from '@/db/prisma';
 import { formatError } from '@/lib/utils';
 
+import { ShippingAddress } from '@/types';
 import { AuthError } from 'next-auth';
 import { isRedirectError } from 'next/dist/client/components/redirect-error';
+import { z } from 'zod';
+import { hash } from '../constants/encrypt';
 import {
+  paymentMethodSchema,
   shippingAddressSchema,
   signInFormSchema,
   signUpFormSchema,
 } from '../validator';
-import { hash } from '../constants/encrypt';
-import { shippingAddress } from '@/types';
 
 const defaultValues = {
   email: '',
@@ -119,7 +121,7 @@ export async function signUp(prevState: unknown, formData: FormData) {
 }
 
 // Update user's address
-export async function updateUserAddress(data: shippingAddress) {
+export async function updateUserAddress(data: ShippingAddress) {
   try {
     const session = await auth();
 
@@ -143,5 +145,36 @@ export async function updateUserAddress(data: shippingAddress) {
     };
   } catch (error) {
     return { success: false, message: formatError(error) };
+  }
+}
+
+export async function updateUserPaymentMethod(
+  data: z.infer<typeof paymentMethodSchema>,
+) {
+  try {
+    const session = await auth();
+
+    const user = await prisma.user.findUnique({
+      where: { id: session?.user?.id! },
+    });
+    if (!user) return null;
+
+    const paymentMethod = paymentMethodSchema.parse(data);
+
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        paymentMethod: paymentMethod.type,
+      },
+    });
+    return {
+      success: true,
+      message: 'User updated successfully',
+    };
+  } catch (error) {
+    return {
+      success: false,
+      message: formatError(error),
+    };
   }
 }

@@ -61,41 +61,53 @@ export default {
 
       return session;
     },
-    async jwt({ token, trigger }: any) {
-      if (!token.sub) return token;
-      const userExist = await getUserByUserId(token.sub);
-      if (!userExist) return token;
+    async jwt({ token, user, trigger, session }: any) {
+      // Assign user fields to token
+      if (user) {
+        token.id = user.id;
+        token.role = user.role;
 
-      console.log('trigger', trigger, 'trigger');
+        // If user has no name then use the email
+        if (user.name === 'NO_NAME') {
+          token.name = user.email!.split('@')[0];
 
-      if (trigger === 'signIn' || trigger === 'signUp') {
-        const cookieObject = await cookies();
-        const sessionCartId = cookieObject.get('sessionCartId')?.value;
-
-        if (sessionCartId) {
-          const sessionCart = await prisma.cart.findFirst({
-            where: {
-              sessionCartId,
-            },
-          });
-
-          // Delete Current user cart
-          if (sessionCart) {
-            await prisma.cart.deleteMany({
-              where: { userId: userExist.id },
-            });
-          }
-
-          // Assign new Cart
-          await prisma.cart.update({
-            where: { id: sessionCart?.id },
-            data: {
-              userId: userExist.id,
-            },
+          // Update database to reflect the token name
+          await prisma.user.update({
+            where: { id: user.id },
+            data: { name: token.name },
           });
         }
+
+        if (trigger === 'signIn' || trigger === 'signUp') {
+          const cookiesObject = await cookies();
+          const sessionCartId = cookiesObject.get('sessionCartId')?.value;
+
+          if (sessionCartId) {
+            const sessionCart = await prisma.cart.findFirst({
+              where: { sessionCartId },
+            });
+
+            if (sessionCart) {
+              // Delete current user cart
+              await prisma.cart.deleteMany({
+                where: { userId: user.id },
+              });
+
+              // Assign new cart
+              await prisma.cart.update({
+                where: { id: sessionCart.id },
+                data: { userId: user.id },
+              });
+            }
+          }
+        }
       }
-      token.role = userExist.role;
+
+      // Handle session updates
+      if (session?.user.name && trigger === 'update') {
+        token.name = session.user.name;
+      }
+
       return token;
     },
     authorized({ auth, request }) {

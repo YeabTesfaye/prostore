@@ -13,6 +13,8 @@ model User {
     Account       Account[]
     Session       Session[]
     Cart          Cart[]
+    Order         Order[]
+    
 }
 
 enum Role {
