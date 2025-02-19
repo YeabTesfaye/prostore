@@ -92,6 +92,7 @@ export function formatId(id: string) {
   return `...${id.substring(id.length - 6)}`;
 }
 
+// Format date and times 
 export const formatDateTime = (dateString: Date) => {
   const dateTimeOptions: Intl.DateTimeFormatOptions = {
     month: 'short', // abbreviated month name (e.g., 'Oct')

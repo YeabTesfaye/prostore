@@ -4,7 +4,13 @@ import { auth } from './auth';
 
 export default async function middleware(request: NextRequest) {
   // The authorized function that checks if a user is authenticated
-  const authorized = async ({ auth, request }: { auth: any; request: NextRequest }) => {
+  const authorized = async ({
+    auth,
+    request,
+  }: {
+    auth: any;
+    request: NextRequest;
+  }) => {
     // Array of regex patterns of paths we want to protect
     const protectedPaths = [
       /\/shipping-address/,

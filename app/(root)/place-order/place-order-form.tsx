@@ -1,16 +1,24 @@
 'use client';
-import { Button } from '@/components/ui/button';
-import { createOrder } from '@/lib/actions/order.actions';
 import { Check, Loader } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { FormEvent } from 'react';
 import { useFormStatus } from 'react-dom';
+import {
+  PayPalButtons,
+  PayPalScriptProvider,
+  usePayPalScriptReducer,
+} from '@paypal/react-paypal-js';
+import { Button } from '@/components/ui/button';
+import { createOrder } from '@/lib/actions/order.actions';
+import {
+  approvePayPalOrder,
+  createPayPalOrder,
+} from '@/lib/actions/order.actions';
 
 const PlaceOrderForm = () => {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     const res = await createOrder();
-    console.log(res);
     if (res.redirectTo) {
       router.push(res.redirectTo);
     }
@@ -18,7 +26,7 @@ const PlaceOrderForm = () => {
 
   const PlaceOrderButton = () => {
     const { pending } = useFormStatus();
-    console.log(pending);
+
     return (
       <Button disabled={pending} className="w-full">
         {pending ? (
