@@ -1,19 +1,10 @@
 'use client';
+import { Button } from '@/components/ui/button';
+import { createOrder } from '@/lib/actions/order.actions';
 import { Check, Loader } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { FormEvent } from 'react';
 import { useFormStatus } from 'react-dom';
-import {
-  PayPalButtons,
-  PayPalScriptProvider,
-  usePayPalScriptReducer,
-} from '@paypal/react-paypal-js';
-import { Button } from '@/components/ui/button';
-import { createOrder } from '@/lib/actions/order.actions';
-import {
-  approvePayPalOrder,
-  createPayPalOrder,
-} from '@/lib/actions/order.actions';
 
 const PlaceOrderForm = () => {
   const handleSubmit = async (e: FormEvent) => {

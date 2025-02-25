@@ -1,13 +1,12 @@
-import Credential from 'next-auth/providers/credentials';
 import type { NextAuthConfig } from 'next-auth';
+import Credential from 'next-auth/providers/credentials';
 
 import { getUserByEmail, getUserByUserId } from '@/data/user';
-import { signInFormSchema } from './lib/validator';
-import { compare } from './lib/constants/encrypt';
 import { PrismaAdapter } from '@auth/prisma-adapter';
-import { prisma } from './db/prisma';
-import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
+import { prisma } from './db/prisma';
+import { compare } from './lib/constants/encrypt';
+import { signInFormSchema } from './lib/validator';
 
 export default {
   secret: process.env.AUTH_SECRET,
@@ -102,10 +101,10 @@ export default {
           }
         }
       }
-
       // Handle session updates
       if (session?.user.name && trigger === 'update') {
         token.name = session.user.name;
+        token.email = session.user.email;
       }
 
       return token;

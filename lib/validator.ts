@@ -41,9 +41,23 @@ export const signInFormSchema = z.object({
 // Schema for siging up a user
 export const signUpFormSchema = z
   .object({
-    name: z.string().min(3, 'Name must be at least 3 characters'),
-    email: z.string().email('Please provide a valid email address'),
-    password: z.string().min(6, 'Password must be at least 6 characters'),
+    name: z
+      .string()
+      .min(3, 'Name must be at least 3 characters')
+      .regex(/^[a-zA-Z\s]+$/, {
+        message: 'Name must contain only letters and spaces',
+      }),
+    email: z
+      .string()
+      .min(3, 'Email Must be at least 3 characters')
+      .email('Please provide a valid email address'),
+    password: z
+      .string()
+      .min(6, 'Password must be at least 6 characters')
+      .max(64, "Password can't be longer than 64 characters")
+      .regex(/^[a-zA-Z0-9!@#$%^&*()_+={}\[\]:;<>,.?/~`-]+$/, {
+        message: 'Password contains invalid characters',
+      }),
     confirmPassword: z.string(),
   })
   .refine((data) => data.password === data.confirmPassword, {
@@ -119,4 +133,18 @@ export const paymentResultSchema = z.object({
   status: z.string(),
   email_address: z.string(),
   pricePaid: z.string(),
+});
+
+// Update Profile Schema
+export const updateProfileSchema = z.object({
+  name: z
+    .string()
+    .min(3, 'Name must be at least 3 characters')
+    .regex(/^[a-zA-Z\s]+$/, {
+      message: 'Name must contain only letters and spaces',
+    }),
+  email: z
+    .string()
+    .email({ message: 'Invalid email format' })
+    .min(5, { message: 'Email must be at least 5 characters long' }),
 });

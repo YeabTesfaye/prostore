@@ -15,6 +15,7 @@ import { singOutUser } from '@/lib/actions/user.actions';
 
 const UserButton = async () => {
   const session = await auth();
+  console.log(session, "SESSION");
   if (!session)
     return (
       <Button asChild>
@@ -26,7 +27,6 @@ const UserButton = async () => {
     );
 
   const firstInitial = session.user?.name?.charAt(0).toUpperCase() ?? '';
-  
 
   return (
     <div className="flex gap-2 items-center">
@@ -52,6 +52,17 @@ const UserButton = async () => {
               </p>
             </div>
           </DropdownMenuLabel>
+
+          <DropdownMenuItem>
+            <Link className="w-full" href="/user/profile">
+              User Prfoile
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem>
+            <Link className="w-full" href="/user/orders">
+              Order History
+            </Link>
+          </DropdownMenuItem>
 
           <DropdownMenuItem className="p-0 mb-1">
             <form action={singOutUser} className="w-full">

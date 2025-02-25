@@ -1,13 +1,7 @@
 import { auth } from '@/auth';
-import { getUserByUserId } from '@/data/user';
-import { getMyCart } from '@/lib/actions/cart.actions';
-import { Metadata } from 'next';
-import { redirect } from 'next/navigation';
-import { ShippingAddress } from '@/types';
 import CheckoutSteps from '@/components/checkout-steps';
-import { Card, CardContent } from '@/components/ui/card';
-import Link from 'next/link';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 import {
   Table,
   TableBody,
@@ -16,8 +10,14 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import Image from 'next/image';
+import { getUserByUserId } from '@/data/user';
+import { getMyCart } from '@/lib/actions/cart.actions';
 import { formatCurrency } from '@/lib/utils';
+import { ShippingAddress } from '@/types';
+import { Metadata } from 'next';
+import Image from 'next/image';
+import Link from 'next/link';
+import { redirect } from 'next/navigation';
 import PlaceOrderForm from './place-order-form';
 
 export const metadata: Metadata = {
@@ -30,6 +30,7 @@ const PlaceOrderPage = async () => {
   if (!userId) {
     redirect('/sign-in?callbackUrl=/place-order');
   }
+ 
 
   const user = await getUserByUserId(userId);
 
@@ -48,7 +49,7 @@ const PlaceOrderPage = async () => {
       <h1 className="py-4 text-2xl">Place Order</h1>
       <div className="grid md:grid-cols-3 md:gap-5">
         <div className="overflow-x-auto md:col-span-2 space-y-4">
-          <Card>
+          <Card> 
             <CardContent className="p-4 gap-4">
               <h2 className="text-xl pb-4">Shipping Address</h2>
               <p>{userAddress.fullName}</p>
@@ -114,6 +115,8 @@ const PlaceOrderPage = async () => {
                   ))}
                 </TableBody>
               </Table>
+              
+
               <Link href="/cart">
                 <Button variant="outline">Edit</Button>
               </Link>
