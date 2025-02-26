@@ -1,8 +1,8 @@
-import Link from 'next/link';
-import { UserIcon } from 'lucide-react';
 import { auth } from '@/auth';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu } from '@/components/ui/dropdown-menu';
+import { UserIcon } from 'lucide-react';
+import Link from 'next/link';
 
 import {
   DropdownMenuContent,
@@ -15,7 +15,6 @@ import { singOutUser } from '@/lib/actions/user.actions';
 
 const UserButton = async () => {
   const session = await auth();
-  console.log(session, "SESSION");
   if (!session)
     return (
       <Button asChild>
@@ -52,6 +51,13 @@ const UserButton = async () => {
               </p>
             </div>
           </DropdownMenuLabel>
+          {session.user?.role === 'ADMIN' && (
+            <DropdownMenuItem>
+              <Link className="w-full" href="/admin/overview">
+                Admin
+              </Link>
+            </DropdownMenuItem>
+          )}
 
           <DropdownMenuItem>
             <Link className="w-full" href="/user/profile">

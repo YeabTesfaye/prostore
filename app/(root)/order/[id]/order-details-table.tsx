@@ -9,29 +9,30 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { formatCurrency, formatDateTime, formatId } from '@/lib/utils';
-import { Order } from '@/types';
-import Image from 'next/image';
-import Link from 'next/link';
-import {
-  PayPalButtons,
-  PayPalScriptProvider,
-  usePayPalScriptReducer,
-} from '@paypal/react-paypal-js';
+import { toast } from '@/hooks/use-toast';
 import {
   approvePayPalOrder,
-  createPayPalOrder,
+  createPayPalOrder
 } from '@/lib/actions/order.actions';
-import { toast } from '@/hooks/use-toast';
+import { formatCurrency, formatDateTime, formatId } from '@/lib/utils';
+import { Order } from '@/types';
+import {
+  PayPalButtons,
+  PayPalScriptProvider
+} from '@paypal/react-paypal-js';
+import Image from 'next/image';
+import Link from 'next/link';
+import { MarkAsDeliveredButton, MarkAsPaidButton, PrintLoadingState } from './utils';
 
 const OrderDetailsTable = ({
   order,
   payPalClientId,
+  isAdmin,
 }: {
   order: Order;
   payPalClientId: string;
+  isAdmin: boolean;
 }) => {
-
   const {
     id,
     shippingAddress,
@@ -46,19 +47,6 @@ const OrderDetailsTable = ({
     isDelivered,
     deliveredAt,
   } = order;
-
-  // Check the loading status of the PayPal script
-  function PrintLoadingState() {
-    const [{ isPending, isRejected }] = usePayPalScriptReducer();
-    let status = '';
-
-    if (isPending) {
-      status = 'Loading PayPal...';
-    } else if (isRejected) {
-      status = 'Error in loading PayPal.';
-    }
-    return status;
-  }
 
   // Creates a PayPal order
   const handleCreatePayPalOrder = async () => {
@@ -79,6 +67,7 @@ const OrderDetailsTable = ({
       variant: res.success ? 'default' : 'destructive',
     });
   };
+
   return (
     <>
       <h1 className="py-4 text-2xl">Order {formatId(id)}</h1>
@@ -188,6 +177,12 @@ const OrderDetailsTable = ({
                 </div>
               )}
             </CardContent>
+            {isAdmin && !isPaid && paymentMethod === 'CashOnDelivery' && (
+              <MarkAsPaidButton orderId={order.id} />
+            )}
+            {isAdmin && isPaid && !isDelivered && (
+              <MarkAsDeliveredButton orderId={order.id} />
+            )}
           </Card>
         </div>
       </div>
