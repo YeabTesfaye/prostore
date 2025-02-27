@@ -14,7 +14,7 @@ const OrderDetailsPage = async (props: { params: Promise<{ id: string }> }) => {
   const { id } = params;
   const order = await getOrderById(id);
   const session = await auth();
-  
+
   if (!order) notFound();
   return (
     <>
