@@ -23,8 +23,8 @@ const AdminProductsPage = async (props: {
   const searchParams = await props.searchParams;
 
   const page = Number(searchParams.page) || 1;
-  const searchText = searchParams.query || '';
-  const category = searchParams.category || '';
+  const searchText = searchParams.query?.trim() || '';
+  const category = searchParams.category?.trim() || '';
 
   const products = await getAllProducts({
     query: searchText,
@@ -36,6 +36,16 @@ const AdminProductsPage = async (props: {
     <div className="space-y-2">
       <div className="flex-between">
         <h1 className="h2-bold">Products</h1>
+        {searchText && (
+          <div>
+            Filtered by <i>&quot;{searchText}&quot;</i>{' '}
+            <Link href={`/admin/products`}>
+              <Button variant="outline" size="sm">
+                Remove Filter
+              </Button>
+            </Link>
+          </div>
+        )}
         <Button asChild variant="default">
           <Link href="/admin/products/create">Create Product</Link>
         </Button>
@@ -46,7 +56,7 @@ const AdminProductsPage = async (props: {
             <TableRow>
               <TableHead>ID</TableHead>
               <TableHead>Name</TableHead>
-              <TableHead className="text-right">Price</TableHead>
+              <TableHead>Price</TableHead>
               <TableHead>Category</TableHead>
               <TableHead>STOCK</TableHead>
               <TableHead>RATING</TableHead>
@@ -58,9 +68,7 @@ const AdminProductsPage = async (props: {
               <TableRow key={product.id}>
                 <TableCell>{formatId(product.id)}</TableCell>
                 <TableCell>{product.name}</TableCell>
-                <TableCell className="text-right">
-                  {formatCurrency(product.price)}
-                </TableCell>
+                <TableCell>{formatCurrency(product.price)}</TableCell>
                 <TableCell>{product.category}</TableCell>
                 <TableCell>{product.stock}</TableCell>
                 <TableCell>{product.rating}</TableCell>

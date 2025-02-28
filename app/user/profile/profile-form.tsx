@@ -74,7 +74,7 @@ const ProfileForm = () => {
               <FormItem className="w-full">
                 <FormControl>
                   <Input
-                    // disabled
+                    disabled
                     placeholder="Email"
                     {...field}
                     className="w-full p-3 rounded-lg border border-gray-300 bg-white text-gray-900 focus:ring-2 focus:ring-blue-500 focus:outline-none 

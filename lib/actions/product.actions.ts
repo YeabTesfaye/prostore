@@ -46,16 +46,44 @@ export async function getAllProducts({
   const data = await prisma.product.findMany({
     take: limit,
     skip: (page - 1) * limit,
-    // where: {
-    //   name: {
-    //     contains: query,
-    //     mode: 'insensitive',
-    //   },
-    //   category: category ? { equals: category } : undefined,
-    // },
+    where: {
+      OR: [
+        {
+          name: {
+            contains: query,
+            mode: 'insensitive',
+          },
+        },
+        {
+          category: {
+            contains: query,
+            mode: 'insensitive',
+          },
+        },
+      ],
+      AND: category ? { category: { equals: category } } : {},
+    },
   });
 
-  const dataCount = await prisma.product.count();
+  const dataCount = await prisma.product.count({
+    where: {
+      OR: [
+        {
+          name: {
+            contains: query,
+            mode: 'insensitive',
+          },
+        },
+        {
+          category: {
+            contains: query,
+            mode: 'insensitive',
+          },
+        },
+      ],
+      AND: category ? { category: { equals: category } } : {},
+    },
+  });
 
   return { data, totalPages: Math.ceil(dataCount / limit) };
 }
@@ -137,4 +165,3 @@ export async function getProductById(productId: string) {
 
   return convertToPlainObject(data);
 }
-

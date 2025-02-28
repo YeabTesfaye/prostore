@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { formatNumberWithDecimal } from './utils';
 import { PAYMENT_METHODS } from './constants';
+import { Role } from '@prisma/client';
 
 // Make sure price is formatted with two decimal places
 const currency = z
@@ -154,4 +155,8 @@ export const updateProductSchema = insertProductSchema.extend({
   id: z.string().min(1, 'Id is required'),
 });
 
-
+// Update User Schema
+export const updateUserSchema = updateProfileSchema.extend({
+  id: z.string().min(1, 'Id is required'),
+  role: z.enum([Role.ADMIN, Role.USER]),
+});

@@ -1,22 +1,18 @@
 'use server';
 
-import { convertToPlainObject, formatError } from '../utils';
 import { auth } from '@/auth';
+import { convertToPlainObject, formatError } from '../utils';
 import { getMyCart } from './cart.actions';
 
-import { revalidatePath } from 'next/cache';
+import { getUserByUserId } from '@/data/user';
 import { prisma } from '@/db/prisma';
 import { CartItem, PaymentResult, SalesDataType } from '@/types';
-import {
-  insertOrderSchema,
-  paymentMethodSchema,
-  paymentResultSchema,
-} from '../validator';
-import { getUserByUserId } from '@/data/user';
-import { isRedirectError } from 'next/dist/client/components/redirect-error';
-import { paypal } from '../paypal';
-import { PAGE_SIZE } from '../constants';
 import { Prisma } from '@prisma/client';
+import { revalidatePath } from 'next/cache';
+import { isRedirectError } from 'next/dist/client/components/redirect-error';
+import { PAGE_SIZE } from '../constants';
+import { paypal } from '../paypal';
+import { insertOrderSchema } from '../validator';
 
 // Create an order
 export async function createOrder() {
@@ -337,11 +333,25 @@ export async function getOrderSummary() {
 export async function getAllOrders({
   limit = PAGE_SIZE,
   page,
+  query,
 }: {
   limit?: number;
   page: number;
+  query: string;
 }) {
+  const queryFilter: Prisma.OrderWhereInput =
+    query && query !== 'all'
+      ? {
+          user: {
+            name: {
+              contains: query,
+              mode: 'insensitive',
+            } as Prisma.StringFilter,
+          },
+        }
+      : {};
   const data = await prisma.order.findMany({
+    where: { ...queryFilter },
     orderBy: { createdAt: 'desc' },
     take: limit,
     skip: (page - 1) * limit,
@@ -417,3 +427,4 @@ export async function deliverOrder(orderId: string) {
     return { success: false, message: formatError(error) };
   }
 }
+

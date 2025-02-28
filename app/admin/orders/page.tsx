@@ -19,11 +19,14 @@ export const metadata: Metadata = {
   title: 'Admin Orders',
 };
 const OrdersPage = async (props: {
-  searchParams: Promise<{ page: string }>;
+  searchParams: Promise<{ page: string; query: string }>;
 }) => {
-  const { page = '1' } = await props.searchParams;
+  const searchParams = await props.searchParams;
+  const page = Number(searchParams.page) || 1;
+  const searchText = searchParams.query?.trim() || '';
 
   const session = await auth();
+
   if (session?.user.role !== 'ADMIN') {
     return (
       <div className="text-center mt-8">
@@ -35,11 +38,23 @@ const OrdersPage = async (props: {
     );
   }
 
-  const orders = await getAllOrders({ page: Number(page) });
-  console.log(orders);
+  const orders = await getAllOrders({ page: Number(page), query: searchText });
+
   return (
     <div className="space-y-2">
-      <h2 className="h2-bold">Orders</h2>
+      <div className="flex items-center gap-3">
+        <h1 className="h2-bold">Orders</h1>
+        {searchText && (
+          <div>
+            Filtered by <i>&quot;{searchText}&quot;</i>{' '}
+            <Link href={`/admin/orders`}>
+              <Button variant="outline" size="sm">
+                Remove Filter
+              </Button>
+            </Link>
+          </div>
+        )}
+      </div>
       <div className=" overflow-x-auto">
         <Table>
           <TableHeader>

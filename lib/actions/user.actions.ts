@@ -14,7 +14,11 @@ import {
   shippingAddressSchema,
   signInFormSchema,
   signUpFormSchema,
+  updateUserSchema,
 } from '../validator';
+import { PAGE_SIZE } from '@/lib/constants';
+import { revalidatePath } from 'next/cache';
+import { Prisma } from '@prisma/client';
 
 const defaultValues = {
   email: '',
@@ -192,7 +196,7 @@ export async function updateProfile(user: { name: string; email: string }) {
 
     if (!currentUser) throw new Error('User not found');
 
-     await prisma.user.update({
+    await prisma.user.update({
       where: {
         id: currentUser.id,
       },
@@ -211,4 +215,100 @@ export async function updateProfile(user: { name: string; email: string }) {
       message: formatError(error),
     };
   }
+}
+
+// Delete user
+export async function deleteUser(userId: string) {
+  try {
+    const userExists = await prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!userExists) throw new Error('User not found');
+
+    await prisma.user.delete({
+      where: { id: userId },
+    });
+
+    revalidatePath('/admin/users');
+    return {
+      success: true,
+      message: 'User deleted successfully',
+    };
+  } catch (error) {
+    return { success: false, message: formatError(error) };
+  }
+}
+
+// Update user
+export async function updateUser(user: z.infer<typeof updateUserSchema>) {
+  try {
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        name: user.name,
+        role: user.role,
+        email: user.email,
+      },
+    });
+
+    revalidatePath('/admin/users');
+
+    return {
+      success: true,
+      message: 'User updated successfully',
+    };
+  } catch (error) {
+    return {
+      success: false,
+      message: formatError(error),
+    };
+  }
+}
+
+// Get all users
+export async function getAllUsers({
+  limit = PAGE_SIZE,
+  page,
+  query,
+}: {
+  limit?: number;
+  page: number;
+  query: string;
+}) {
+  const queryFilter: Prisma.UserWhereInput =
+    query && query !== 'all'
+      ? {
+          OR: [
+            {
+              name: {
+                contains: query,
+                mode: 'insensitive',
+              } as Prisma.StringFilter,
+            },
+            {
+              email: {
+                contains: query,
+                mode: 'insensitive',
+              } as Prisma.StringFilter,
+            },
+          ],
+        }
+      : {};
+
+  const data = await prisma.user.findMany({
+    where: {
+      ...queryFilter,
+    },
+    orderBy: { createdAt: 'desc' },
+    take: limit,
+    skip: (page - 1) * limit,
+  });
+
+  const dataCount = await prisma.user.count();
+
+  return {
+    data,
+    totalPages: Math.ceil(dataCount / limit),
+  };
 }
