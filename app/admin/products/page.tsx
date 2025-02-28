@@ -1,3 +1,4 @@
+import DeleteDialog from '@/components/shared/delete-dialog';
 import Pagination from '@/components/shared/pagination';
 import { Button } from '@/components/ui/button';
 import {
@@ -8,7 +9,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { getAllProducts } from '@/lib/actions/product.actions';
+import { deleteProduct, getAllProducts } from '@/lib/actions/product.actions';
 import { formatCurrency, formatId } from '@/lib/utils';
 import Link from 'next/link';
 
@@ -57,7 +58,9 @@ const AdminProductsPage = async (props: {
               <TableRow key={product.id}>
                 <TableCell>{formatId(product.id)}</TableCell>
                 <TableCell>{product.name}</TableCell>
-                <TableCell>{formatCurrency(product.price)}</TableCell>
+                <TableCell className="text-right">
+                  {formatCurrency(product.price)}
+                </TableCell>
                 <TableCell>{product.category}</TableCell>
                 <TableCell>{product.stock}</TableCell>
                 <TableCell>{product.rating}</TableCell>
@@ -65,13 +68,13 @@ const AdminProductsPage = async (props: {
                   <Button variant="outline" size="sm">
                     <Link href={`/admin/products/${product.id}`}>Edit</Link>{' '}
                   </Button>
-                  {/* DELETE BUTTON HERE */}
+                  <DeleteDialog id={product.id} action={deleteProduct} />
                 </TableCell>
               </TableRow>
             ))}
           </TableBody>
         </Table>
-        {products.totalPages && products.totalPages > 1 && (
+        {products.totalPages > 1 && (
           <Pagination page={page} totalPages={products.totalPages} />
         )}
       </div>
