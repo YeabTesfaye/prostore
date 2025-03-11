@@ -32,6 +32,7 @@ const ProductCard = ({ product }: { product: Product }) => {
             <p className="text-destructive">Out of Stock</p>
           )}
         </div>
+      
       </CardContent>
     </Card>
   );
