@@ -14,6 +14,7 @@ model User {
     Session       Session[]
     Cart          Cart[]
     Order         Order[]
+    Review        Review[]
 }
 
 enum Role {

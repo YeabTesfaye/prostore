@@ -14,4 +14,5 @@ model Product {
     banner      String?
     createdAt   DateTime    @default(now()) @db.Timestamp(6)
     OrderItem   OrderItem[]
+    Review      Review[]
 }
