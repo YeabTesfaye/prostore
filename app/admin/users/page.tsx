@@ -17,6 +17,7 @@ import Link from 'next/link';
 export const metadata: Metadata = {
   title: 'Admin Users',
 };
+
 const AdminUserPage = async (props: {
   searchParams: Promise<{ page: number; query: string }>;
 }) => {

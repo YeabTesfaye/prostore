@@ -40,7 +40,7 @@ const ProductDetailsPage = async (props: {
   params: Promise<{ slug: string }>;
 }) => {
   const session = await auth();
-  const userId = session?.user.id;
+  const userId = session?. user.id;
 
   const params = await props.params;
 

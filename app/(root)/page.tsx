@@ -13,6 +13,7 @@ export const metadata: Metadata = {
 const HomePage = async () => {
   const latestProducts = await getLatestProducts();
   const featuredProducts = await getFeaturedProducts();
+  
   return (
     <div className="space-y-8">
       {featuredProducts.length > 0 && (

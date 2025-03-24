@@ -27,7 +27,7 @@ const OrdersPage = async (props: {
 
   const session = await auth();
 
-  if (session?.user.role !== 'ADMIN') {
+  if (session?.user.role !== 'admin') {
     return (
       <div className="text-center mt-8">
         <h2 className="text-xl font-bold text-red-500">403 - Forbidden</h2>

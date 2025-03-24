@@ -1,4 +1,3 @@
-import { Role } from '@prisma/client';
 import { z } from 'zod';
 import { PAYMENT_METHODS } from './constants';
 import { formatNumberWithDecimal } from './utils';
@@ -158,7 +157,7 @@ export const updateProductSchema = insertProductSchema.extend({
 // Update User Schema
 export const updateUserSchema = updateProfileSchema.extend({
   id: z.string().min(1, 'Id is required'),
-  role: z.enum([Role.ADMIN, Role.USER]),
+  role: z.enum(['admin', 'user']),
 });
 
 // Insert Review Schema
