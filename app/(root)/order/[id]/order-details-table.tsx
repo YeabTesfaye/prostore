@@ -9,20 +9,25 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { toast } from '@/hooks/use-toast';
+import { toast, useToast } from '@/hooks/use-toast';
 import {
   approvePayPalOrder,
-  createPayPalOrder
+  createPayPalOrder,
 } from '@/lib/actions/order.actions';
 import { formatCurrency, formatDateTime, formatId } from '@/lib/utils';
 import { Order } from '@/types';
 import {
   PayPalButtons,
-  PayPalScriptProvider
+  PayPalScriptProvider,
+  usePayPalScriptReducer,
 } from '@paypal/react-paypal-js';
 import Image from 'next/image';
 import Link from 'next/link';
-import { MarkAsDeliveredButton, MarkAsPaidButton, PrintLoadingState } from './utils';
+import {
+  MarkAsDeliveredButton,
+  MarkAsPaidButton,
+  PrintLoadingState,
+} from './utils';
 
 const OrderDetailsTable = ({
   order,
@@ -47,6 +52,9 @@ const OrderDetailsTable = ({
     isDelivered,
     deliveredAt,
   } = order;
+
+  const { toast } = useToast();
+
 
   // Creates a PayPal order
   const handleCreatePayPalOrder = async () => {

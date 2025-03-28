@@ -1,51 +1,43 @@
 'use client';
-
 import {
-  ResponsiveContainer,
+  Bar,
   BarChart,
+  ResponsiveContainer,
   XAxis,
   YAxis,
-  Bar,
-  CartesianGrid,
   Tooltip,
-  Legend,
+  CartesianGrid,
 } from 'recharts';
+type SalesData = { month: string; totalSales: number };
 
-const Charts = ({
-  data: { salesData },
-}: {
-  data: { salesData: { month: string; totalSales: number }[] };
-}) => {
+interface Props {
+  data: { salesData: SalesData[] };
+}
+const Charts = ({ data: { salesData } }: Props) => {
   return (
-    <ResponsiveContainer width="100%" height={350}>
+    <ResponsiveContainer width={'100%'} height={350}>
       <BarChart data={salesData}>
-        <CartesianGrid strokeDasharray="3 3" stroke="#ddd" />
-
+        <CartesianGrid strokeDasharray="3 3" />
         <XAxis
           dataKey="month"
-          stroke="#8884d8"
+          stroke="#888888"
           fontSize={12}
-          tickLine={true}
-          axisLine={true}
+          tickLine={false}
+          axisLine={false}
         />
-
         <YAxis
-          stroke="#8884d8"
+          stroke="#888888"
           fontSize={12}
-          tickLine={true}
-          axisLine={true}
+          tickLine={false}
+          axisLine={false}
           tickFormatter={(value) => `$${value}`}
         />
-
-        {/* Tooltip and Legend for better visualization */}
         <Tooltip />
-        <Legend />
-
         <Bar
           dataKey="totalSales"
-          fill="#4CAF50"
+          fill="#4F46E5"
           radius={[4, 4, 0, 0]}
-          className="fill-slate-700"
+          className="fill-primary"
         />
       </BarChart>
     </ResponsiveContainer>

@@ -24,7 +24,7 @@ const OrderDetailsPage = async (props: { params: Promise<{ id: string }> }) => {
           shippingAddress: order.shippingAddress as ShippingAddress,
         }}
         payPalClientId={process.env.PAYPAL_CLIENT_ID!}
-        isAdmin={session?.user.role === 'ADMIN' || false}
+        isAdmin={session?.user.role === 'admin' || false}
       />
     </>
   );
