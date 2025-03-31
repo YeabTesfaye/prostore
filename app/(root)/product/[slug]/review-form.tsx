@@ -1,6 +1,6 @@
-'use client';
+'use clinet';
 import { useState } from 'react';
-import { useForm, SubmitHandler, Form } from 'react-hook-form';
+import { useForm, SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@/components/ui/button';
 import {
@@ -12,10 +12,12 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import {
+  Form,
   FormControl,
   FormField,
   FormItem,
   FormLabel,
+  FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import {
@@ -25,19 +27,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { z } from 'zod';
-import { insertReviewSchema } from '@/lib/validator';
-import { useToast } from '@/hooks/use-toast';
-import { reviewFormDefaultValues } from '@/lib/constants';
 import { Textarea } from '@/components/ui/textarea';
-import { StarIcon } from 'lucide-react';
+import { toast, useToast } from '@/hooks/use-toast';
 import {
   createUpdateReview,
   getReviewByProductId,
 } from '@/lib/actions/review.actions';
+import { reviewFormDefaultValues } from '@/lib/constants';
+import { insertReviewSchema } from '@/lib/validator';
+import { z } from 'zod';
+import { StarIcon } from 'lucide-react';
 
 type CustomerReview = z.infer<typeof insertReviewSchema>;
-
 const ReviewForm = ({
   userId,
   productId,
@@ -48,13 +49,25 @@ const ReviewForm = ({
   onReviewSubmitted: () => void;
 }) => {
   const [open, setOpen] = useState(false);
-  const { toast } = useToast();
-
   const form = useForm<CustomerReview>({
     resolver: zodResolver(insertReviewSchema),
     defaultValues: reviewFormDefaultValues,
   });
+  const handleOpenForm = async () => {
+    form.setValue('productId', productId);
+    form.setValue('userId', userId);
 
+    const review = await getReviewByProductId({ productId });
+
+    if (review) {
+      form.setValue('title', review?.title);
+      form.setValue('description', review?.description);
+      form.setValue('rating', review?.rating);
+    }
+    setOpen(true);
+  };
+
+  // Form submit handler
   const onSubmit: SubmitHandler<CustomerReview> = async (values) => {
     const res = await createUpdateReview({ ...values, productId });
 
@@ -63,36 +76,25 @@ const ReviewForm = ({
         variant: 'destructive',
         description: res.message,
       });
+
     setOpen(false);
+
     onReviewSubmitted();
 
     toast({
       description: res.message,
     });
   };
-
-  const handleOpenForm = async () => {
-    form.setValue('productId', productId);
-    form.setValue('userId', userId);
-
-    const review = await getReviewByProductId({ productId });
-
-    if (review) {
-      form.setValue('title', review.title);
-      form.setValue('description', review.description);
-      form.setValue('rating', review.rating);
-    }
-
-    setOpen(true);
-  };
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <Button variant="default">Write a review</Button>
+    <Dialog open={open} onOpenChange={handleOpenForm}>
+      <Button onClick={() => setOpen(true)} variant="default">
+        Write a review
+      </Button>
       <DialogContent className="sm:max-w-[425px]">
         <Form {...form}>
           <form method="post" onSubmit={form.handleSubmit(onSubmit)}>
             <DialogHeader>
-              <DialogTitle>Write a review </DialogTitle>
+              <DialogTitle>Write a review</DialogTitle>
               <DialogDescription>
                 Share your thoughts with other customers
               </DialogDescription>
@@ -103,10 +105,11 @@ const ReviewForm = ({
                 name="title"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Title </FormLabel>
+                    <FormLabel>Title</FormLabel>
                     <FormControl>
                       <Input placeholder="Enter title" {...field} />
                     </FormControl>
+                    <FormMessage />
                   </FormItem>
                 )}
               />
@@ -119,6 +122,7 @@ const ReviewForm = ({
                     <FormControl>
                       <Textarea placeholder="Enter description" {...field} />
                     </FormControl>
+                    <FormMessage />
                   </FormItem>
                 )}
               />
@@ -143,11 +147,12 @@ const ReviewForm = ({
                             key={index}
                             value={(index + 1).toString()}
                           >
-                            {index + 1} <StarIcon className=" inline h-4 w-4" />
+                            {index + 1} <StarIcon className="inline h-4 w-4" />
                           </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
+                    <FormMessage />
                   </FormItem>
                 )}
               />
@@ -155,7 +160,7 @@ const ReviewForm = ({
             <DialogFooter>
               <Button
                 type="submit"
-                size={'lg'}
+                size="lg"
                 className="w-full"
                 disabled={form.formState.isSubmitting}
               >

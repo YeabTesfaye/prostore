@@ -52,7 +52,7 @@ export async function createUpdateReview(
         // Create a new review
         await tx.review.create({ data: review });
       }
-
+     
       // Get the average rating
       const averageRating = await tx.review.aggregate({
         _avg: { rating: true },

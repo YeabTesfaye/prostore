@@ -1,5 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
+import { Review } from '@/types';
 import {
   Card,
   CardContent,
@@ -7,14 +8,13 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Review } from '@/types';
+import { Calendar, Check, User } from 'lucide-react';
+import { formatDateTime } from '@/lib/utils';
+import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
 import ReviewForm from './review-form';
 import { getReviews } from '@/lib/actions/review.actions';
-import { Calendar, User } from 'lucide-react';
-import { formatDateTime } from '@/lib/utils';
 import Rating from '@/components/shared/product/rating';
-import { toast, useToast } from '@/hooks/use-toast';
 const ReviewList = ({
   userId,
   productId,
@@ -24,17 +24,15 @@ const ReviewList = ({
   productId: string;
   productSlug: string;
 }) => {
+  const { toast } = useToast();
   const [reviews, setReviews] = useState<Review[]>([]);
-
   useEffect(() => {
-    const loadReviews = async () => {
+    const laodReviews = async () => {
       const res = await getReviews({ productId });
       setReviews(res.data);
     };
-
-    loadReviews();
+    laodReviews();
   }, [productId]);
-
   const reload = async () => {
     try {
       const res = await getReviews({ productId });
@@ -46,19 +44,15 @@ const ReviewList = ({
       });
     }
   };
-
-  const { toast } = useToast();
   return (
     <div className="space-y-4">
-      {reviews.length === 0 && <div> No review yet </div>}
+      {reviews.length === 0 && <div> No Review yet! </div>}
       {userId ? (
-        <>
-          <ReviewForm
-            userId={userId}
-            productId={productId}
-            onReviewSubmitted={reload}
-          />
-        </>
+        <ReviewForm
+          userId={userId}
+          productId={productId}
+          onReviewSubmitted={reload}
+        />
       ) : (
         <div>
           Please
@@ -66,7 +60,7 @@ const ReviewList = ({
             className="text-primary px-2"
             href={`/api/auth/signin?callbackUrl=/product/${productSlug}`}
           >
-            sign in
+            Sign in{' '}
           </Link>
           to write a review
         </div>
@@ -85,7 +79,7 @@ const ReviewList = ({
                 <Rating value={review.rating} />
                 <div className="flex items-center">
                   <User className="mr-1 h-3 w-3" />
-                  {review.user ? review.user.name : 'Delete User'}
+                  {review.user ? review.user.name : 'Deleted User'}
                 </div>
                 <div className="flex items-center">
                   <Calendar className="mr-1 h-3 w-3" />
