@@ -34,7 +34,7 @@ const OrderDetailsTable = ({
   payPalClientId,
   isAdmin,
 }: {
-  order: Order;
+  order: Omit<Order, 'paymentResult'>;
   payPalClientId: string;
   isAdmin: boolean;
 }) => {
@@ -54,7 +54,6 @@ const OrderDetailsTable = ({
   } = order;
 
   const { toast } = useToast();
-
 
   // Creates a PayPal order
   const handleCreatePayPalOrder = async () => {

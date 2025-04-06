@@ -6,13 +6,20 @@ import { getMyCart } from './cart.actions';
 
 import { getUserByUserId } from '@/data/user';
 import { prisma } from '@/db/prisma';
-import { CartItem, PaymentResult, SalesDataType } from '@/types';
+import {
+  CartItem,
+  PaymentResult,
+  SalesDataType,
+  ShippingAddress,
+} from '@/types';
 import { Prisma } from '@prisma/client';
 import { revalidatePath } from 'next/cache';
 import { isRedirectError } from 'next/dist/client/components/redirect-error';
 import { PAGE_SIZE } from '../constants';
 import { paypal } from '../paypal';
 import { insertOrderSchema } from '../validator';
+import { sendPurchaseReceipt } from '@/email';
+import { JsonValue } from 'next-auth/adapters';
 
 // Create an order
 export async function createOrder() {
@@ -189,6 +196,30 @@ export async function approvePayPalOrder(
       },
     });
     revalidatePath(`/order/${orderId}`);
+
+    // Get the updated order after the transaction
+    const updatedOrder = await prisma.order.findFirst({
+      where: {
+        id: orderId,
+      },
+      include: {
+        orderItems: true,
+        user: { select: { name: true, email: true } },
+      },
+    });
+
+    if (!updatedOrder) {
+      throw new Error('Order not found!');
+    }
+
+    // Send the purchanse receipt email with the update order
+    sendPurchaseReceipt({
+      order: {
+        ...updatedOrder,
+        shippingAddress: updatedOrder.shippingAddress as ShippingAddress,
+        paymentResult: updatedOrder.paymentResult as PaymentResult,
+      },
+    });
 
     return {
       success: true,
@@ -427,4 +458,3 @@ export async function deliverOrder(orderId: string) {
     return { success: false, message: formatError(error) };
   }
 }
-

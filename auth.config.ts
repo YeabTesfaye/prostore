@@ -2,9 +2,9 @@ import type { NextAuthConfig } from 'next-auth';
 import Credential from 'next-auth/providers/credentials';
 
 import { getUserByEmail, getUserByUserId } from '@/data/user';
-import { PrismaAdapter } from '@auth/prisma-adapter';
+import { PrismaAdapter } from '@next-auth/prisma-adapter';
 import { cookies } from 'next/headers';
-import { prisma } from './db/prisma';
+import { basePrisma } from './db/prisma';
 import { compare } from './lib/constants/encrypt';
 import { signInFormSchema } from './lib/validator';
 
@@ -14,7 +14,7 @@ export default {
     signIn: '/auth/sign-in',
     error: '/auth/sign-in',
   },
-  adapter: PrismaAdapter(prisma),
+  adapter: PrismaAdapter(basePrisma),
   session: { strategy: 'jwt' },
   providers: [
     Credential({
@@ -71,7 +71,7 @@ export default {
           token.name = user.email!.split('@')[0];
 
           // Update database to reflect the token name
-          await prisma.user.update({
+          await basePrisma.user.update({
             where: { id: user.id },
             data: { name: token.name },
           });
@@ -82,18 +82,18 @@ export default {
           const sessionCartId = cookiesObject.get('sessionCartId')?.value;
 
           if (sessionCartId) {
-            const sessionCart = await prisma.cart.findFirst({
+            const sessionCart = await basePrisma.cart.findFirst({
               where: { sessionCartId },
             });
 
             if (sessionCart) {
               // Delete current user cart
-              await prisma.cart.deleteMany({
+              await basePrisma.cart.deleteMany({
                 where: { userId: user.id },
               });
 
               // Assign new cart
-              await prisma.cart.update({
+              await basePrisma.cart.update({
                 where: { id: sessionCart.id },
                 data: { userId: user.id },
               });
