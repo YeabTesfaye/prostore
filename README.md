@@ -31,7 +31,6 @@ A full featured Ecommerce website built with Next.js, TypeScript, PostgreSQL and
 - Admin area with stats & chart using Recharts
 - Order, product and user management
 - User area with profile and orders
-- Stripe API integration
 - PayPal integration
 - Cash on delivery option
 - Interactive checkout process
