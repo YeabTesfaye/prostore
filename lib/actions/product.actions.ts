@@ -5,7 +5,7 @@ import { convertToPlainObject, formatError } from '../utils';
 import { skip } from 'node:test';
 import { revalidatePath } from 'next/cache';
 import { TypeOf, z } from 'zod';
-import { insertProductSchema, updateProductSchema } from '../validator';
+import { baseProductSchema, updateProductSchema } from '../validator';
 import { Prisma } from '@prisma/client';
 
 // Get latest products
@@ -134,10 +134,10 @@ export async function deleteProduct(id: string) {
 }
 
 // Create Product
-export async function createProduct(data: z.infer<typeof insertProductSchema>) {
+export async function createProduct(data: z.infer<typeof baseProductSchema>) {
   try {
     // Validate and create product
-    const product = insertProductSchema.parse(data);
+    const product = baseProductSchema.parse(data);
     await prisma.product.create({ data: product });
 
     revalidatePath('/admin/products');

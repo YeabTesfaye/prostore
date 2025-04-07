@@ -11,7 +11,7 @@ const currency = z
   );
 
 // Define the zod schema
-export const insertProductSchema = z.object({
+export const baseProductSchema = z.object({
   name: z.string().min(3, 'Name must be at least 3 characters'),
   slug: z.string().min(3, 'Slug must be at least 3 characters'),
   category: z.string().min(3, 'Category must be at least 3 characters'),
@@ -22,6 +22,7 @@ export const insertProductSchema = z.object({
   isFeatured: z.boolean(),
   banner: z.string().nullable(),
   price: currency,
+  id: z.string().optional(),
 });
 
 // Schema for signing in a user
@@ -150,9 +151,7 @@ export const updateProfileSchema = z.object({
 });
 
 // Schema for update a product
-export const updateProductSchema = insertProductSchema.extend({
-  id: z.string().min(1, 'Id is required'),
-});
+export const updateProductSchema = baseProductSchema;
 
 // Update User Schema
 export const updateUserSchema = updateProfileSchema.extend({

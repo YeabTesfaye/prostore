@@ -2,24 +2,29 @@
 
 import { useToast } from '@/hooks/use-toast';
 import { productDefaultValues } from '@/lib/constants';
-import { Product } from '@/types';
+import { baseProductSchema, updateProductSchema } from '@/lib/validator';
+import { FormSchema, Product } from '@/types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
 import { ControllerRenderProps, SubmitHandler, useForm } from 'react-hook-form';
 import { z } from 'zod';
-
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
 import slugify from 'slugify';
-
-import { createProduct, updateProduct } from '@/lib/actions/product.actions';
-import { UploadButton } from '@/lib/uploadthing';
-import Image from 'next/image';
-import { insertProductSchema, updateProductSchema } from '@/lib/validator';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Textarea } from '@/components/ui/textarea';
+import { createProduct, updateProduct } from '@/lib/actions/product.actions';
+import { UploadButton } from '@/lib/uploadthing';
+import { Card, CardContent } from '@/components/ui/card';
+import Image from 'next/image';
+import { Checkbox } from '@/components/ui/checkbox';
 
 const ProductForm = ({
   type,
@@ -33,16 +38,16 @@ const ProductForm = ({
   const router = useRouter();
   const { toast } = useToast();
 
-  const form = useForm<z.infer<typeof insertProductSchema>>({
+  const form = useForm<FormSchema>({
     resolver:
       type === 'Update'
         ? zodResolver(updateProductSchema)
-        : zodResolver(insertProductSchema),
+        : zodResolver(baseProductSchema),
     defaultValues:
       product && type === 'Update' ? product : productDefaultValues,
   });
 
-  const onSubmit: SubmitHandler<z.infer<typeof insertProductSchema>> = async (
+  const onSubmit: SubmitHandler<z.infer<typeof baseProductSchema>> = async (
     values,
   ) => {
     // On Create
@@ -105,7 +110,7 @@ const ProductForm = ({
               field,
             }: {
               field: ControllerRenderProps<
-                z.infer<typeof insertProductSchema>,
+                z.infer<typeof baseProductSchema>,
                 'name'
               >;
             }) => (
@@ -126,7 +131,7 @@ const ProductForm = ({
               field,
             }: {
               field: ControllerRenderProps<
-                z.infer<typeof insertProductSchema>,
+                z.infer<typeof baseProductSchema>,
                 'slug'
               >;
             }) => (
@@ -163,7 +168,7 @@ const ProductForm = ({
               field,
             }: {
               field: ControllerRenderProps<
-                z.infer<typeof insertProductSchema>,
+                z.infer<typeof baseProductSchema>,
                 'category'
               >;
             }) => (
@@ -184,7 +189,7 @@ const ProductForm = ({
               field,
             }: {
               field: ControllerRenderProps<
-                z.infer<typeof insertProductSchema>,
+                z.infer<typeof baseProductSchema>,
                 'brand'
               >;
             }) => (
@@ -207,7 +212,7 @@ const ProductForm = ({
               field,
             }: {
               field: ControllerRenderProps<
-                z.infer<typeof insertProductSchema>,
+                z.infer<typeof baseProductSchema>,
                 'price'
               >;
             }) => (
@@ -228,7 +233,7 @@ const ProductForm = ({
               field,
             }: {
               field: ControllerRenderProps<
-                z.infer<typeof insertProductSchema>,
+                z.infer<typeof baseProductSchema>,
                 'stock'
               >;
             }) => (
@@ -341,7 +346,7 @@ const ProductForm = ({
               field,
             }: {
               field: ControllerRenderProps<
-                z.infer<typeof insertProductSchema>,
+                z.infer<typeof baseProductSchema>,
                 'description'
               >;
             }) => (
