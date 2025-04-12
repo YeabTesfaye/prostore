@@ -1,0 +1,47 @@
+# Public Variables
+NEXT_PUBLIC_APP_NAME="YourAppName"
+NEXT_PUBLIC_APP_DESCRIPTION="Your app description here"
+NEXT_PUBLIC_SERVER_URL="http://localhost:3000/"
+LATEST_PRODUCTS_LIMIT=4
+
+# NextAuth URLs
+NEXTAUTH_URL=http://localhost:3000
+NEXTAUTH_URL_INTERNAL=http://localhost:3000
+
+# Database
+DATABASE_URL="postgres://username:password@host:port/dbname?sslmode=require"
+
+# Auth
+AUTH_SECRET="your_auth_secret"
+
+# Environment
+NODE_ENV=production
+
+# Encryption
+ENCRYPTION_KEY=your_encryption_key
+
+# Payments
+PAYMENT_METHODS="PayPal, CashOnDelivery"
+DEFAULT_PAYMENT_METHOD="PayPal"
+
+# PayPal
+PAYPAL_API_URL=https://api-m.sandbox.paypal.com
+PAYPAL_CLIENT_ID="your_paypal_client_id"
+PAYPAL_APP_SECRET="your_paypal_app_secret"
+
+# Pagination
+PAGE_SIZE=5
+
+# UploadThing
+UPLOADTHING_TOKEN="your_uploadthing_token"
+UPLOADTHING_SECRET="your_uploadthing_secret"
+UPLOADTHING_APPID="your_uploadthing_app_id"
+
+# Roles
+USER_ROLES=admin, user
+
+
+
+# Resend (Email)
+RESEND_API_KEY="your_resend_api_key"
+SENDER_EMAIL="your_sender_email@example.com"

@@ -28,7 +28,7 @@ export const shippingAddressDefaultValues = {
 };
 
 export const PAYMENT_METHODS = process.env.PAYMENT_METHODS
-  ? process.env.PAYMENT_METHODS?.split(',').map((item) => item.trim())
+  ? process.env.PAYMENT_METHODS.split(',').map((item) => item.trim())
   : ['PayPal', 'CashOnDelivery'];
 
 export const DEFAULT_PAYMENT_METHODS =
@@ -52,7 +52,7 @@ export const productDefaultValues = {
 };
 
 export const USER_ROLES = process.env.USER_ROLES
-  ? process.env.USER_ROLES.split(', ')
+  ? process.env.USER_ROLES.split(',').map((item) => item.trim())
   : ['admin', 'user'];
 
 export const reviewFormDefaultValues = {

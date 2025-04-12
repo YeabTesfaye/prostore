@@ -21,10 +21,12 @@ export function formatNumberWithDecimal(num: number): string {
 
 // Format Errors
 export function formatError(error: any): string {
-  if (error.name === 'ZodError') {
+  if (!error) return 'An unknown error occurred';
+
+  if (error.name === 'ZodError' && error.errors) {
     // Handle Zod error
     const fieldErrors = Object.keys(error.errors).map((field) => {
-      const message = error.errors[field].message;
+      const message = error.errors[field]?.message;
       return typeof message === 'string' ? message : JSON.stringify(message);
     });
 
@@ -34,13 +36,13 @@ export function formatError(error: any): string {
     error.code === 'P2002'
   ) {
     // Handle Prisma error
-    const field = error.meta?.target ? error.meta.target[0] : 'Field';
+    const field = error.meta?.target?.[0] ?? 'Field';
     return `${field.charAt(0).toUpperCase() + field.slice(1)} already exists`;
   } else {
     // Handle other errors
     return typeof error.message === 'string'
       ? error.message
-      : JSON.stringify(error.message);
+      : JSON.stringify(error.message ?? 'An unknown error occurred');
   }
 }
 

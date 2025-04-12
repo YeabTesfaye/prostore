@@ -19,6 +19,7 @@
     "@next/swc-win32-x64-msvc": "^15.3.0-canary.20",
     "@paypal/react-paypal-js": "^8.8.2",
     "@prisma/adapter-neon": "^6.3.0",
+    "@prisma/client": "^6.3.0",
     "@radix-ui/react-alert-dialog": "^1.1.6",
     "@radix-ui/react-checkbox": "^1.1.4",
     "@radix-ui/react-dialog": "^1.1.6",
@@ -54,7 +55,6 @@
     "zod": "^3.24.2"
   },
   "devDependencies": {
-    "@prisma/client": "^6.3.0",
     "@types/jest": "^29.5.14",
     "@types/node": "^20.17.19",
     "@types/react": "^18",
