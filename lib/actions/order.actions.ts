@@ -3,7 +3,6 @@
 import { auth } from '@/auth';
 import { convertToPlainObject, formatError } from '../utils';
 import { getMyCart } from './cart.actions';
-
 import { getUserByUserId } from '@/data/user';
 import { prisma } from '@/db/prisma';
 import {
@@ -14,7 +13,7 @@ import {
 } from '@/types';
 import { Prisma } from '@prisma/client';
 import { revalidatePath } from 'next/cache';
-import { isRedirectError } from 'next/dist/client/components/redirect-error';
+import { redirect } from 'next/navigation';
 import { PAGE_SIZE } from '../constants';
 import { paypal } from '../paypal';
 import { insertOrderSchema } from '../validator';
@@ -34,25 +33,13 @@ export async function createOrder() {
     const user = await getUserByUserId(userId);
 
     if (!cart || cart.items.length === 0) {
-      return {
-        success: false,
-        message: 'Your cart is empty',
-        redirectTo: '/cart',
-      };
+      redirect('/cart');
     }
     if (!user?.address) {
-      return {
-        success: false,
-        message: 'Please add a shipping address',
-        redirectTo: '/shipping-address',
-      };
+      redirect('/shipping-address');
     }
     if (!user.paymentMethod) {
-      return {
-        success: false,
-        message: 'Please select a payment method',
-        redirectTo: '/payment-method',
-      };
+      redirect('/payment-method');
     }
 
     const order = insertOrderSchema.parse({
@@ -92,14 +79,12 @@ export async function createOrder() {
 
     if (!insertedOrderId) throw new Error('Order not created');
 
-    return {
-      success: true,
-      message: 'Order successfully created',
-      redirectTo: `/order/${insertedOrderId}`,
-    };
+    redirect(`/order/${insertedOrderId}`);
   } catch (error) {
-    if (isRedirectError(error)) throw error;
-    return { success: false, message: formatError(error) };
+    return {
+      success: false,
+      message: formatError(error),
+    };
   }
 }
 
@@ -109,7 +94,7 @@ export async function getOrderById(orderId: string) {
       id: orderId,
     },
     include: {
-      orderItems: true,
+      orderitems: true,
       user: { select: { name: true, email: true } },
     },
   });
@@ -203,7 +188,7 @@ export async function approvePayPalOrder(
         id: orderId,
       },
       include: {
-        orderItems: true,
+        orderitems: true,
         user: { select: { name: true, email: true } },
       },
     });
@@ -245,7 +230,7 @@ export async function updateOrderToPaid({
       id: orderId,
     },
     include: {
-      orderItems: true,
+      orderitems: true,
     },
   });
 
@@ -256,7 +241,7 @@ export async function updateOrderToPaid({
   // Transaction to update order and account for product stock
   await prisma.$transaction(async (tx) => {
     // Update all item quantities in the database
-    for (const item of order.orderItems) {
+    for (const item of order.orderitems) {
       await tx.product.update({
         where: { id: item.productId },
         data: {
@@ -280,7 +265,7 @@ export async function updateOrderToPaid({
   const updatedOrder = await prisma.order.findFirst({
     where: { id: orderId },
     include: {
-      orderItems: true,
+      orderitems: true,
       user: { select: { name: true, email: true } },
     },
   });

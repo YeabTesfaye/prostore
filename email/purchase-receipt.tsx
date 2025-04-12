@@ -43,7 +43,7 @@ PurchaseReceiptEmail.PreviewProps = {
     taxPrice: '10',
     shippingPrice: '10',
     itemsPrice: '80',
-    orderItems: sampleData.products.map((x) => ({
+    orderitems: sampleData.products.map((x) => ({
       name: x.name,
       orderId: '123',
       productId: '123',
@@ -102,7 +102,7 @@ export default function PurchaseReceiptEmail({ order }: { order: Order }) {
               </Row>
             </Section>
             <Section className="border border-solid border-gray-500 rounded-lg p-4 md:p-6 my-4">
-              {order.orderItems.map((item) => (
+              {order.orderitems.map((item) => (
                 <Row key={item.productId} className="mt-8">
                   <Column className="w-20">
                     <Img
